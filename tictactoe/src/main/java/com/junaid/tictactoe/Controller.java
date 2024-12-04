@@ -4,10 +4,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.CrossOrigin;
+
+@CrossOrigin(origins = "https://127.0.0.1:5500")
 
 @RestController
 @RequestMapping("/TicTacToe")
 public class Controller {
+
     @PostMapping("/getMove")    
     public int getBestMove(@RequestBody Game game){
         Computer computer = new Computer();
