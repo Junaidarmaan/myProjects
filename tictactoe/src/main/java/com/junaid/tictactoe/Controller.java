@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 
-@CrossOrigin(origins = "https://127.0.0.1:5500")
+@CrossOrigin(origins = "*")
 
 @RestController
 @RequestMapping("/TicTacToe")
