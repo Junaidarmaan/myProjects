@@ -1,26 +1,31 @@
-# Use Amazon Corretto JDK 21 as the base image for the build stage
-FROM amazoncorretto:21 as build
+# Use Amazon Corretto 21 JDK as base image
+FROM amazoncorretto:21-alpine
 
-# Set working directory
+# Install Maven
+RUN apk add --no-cache curl bash
+RUN curl -sL https://archive.apache.org/dist/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz | tar xz -C /opt
+RUN ln -s /opt/apache-maven-3.8.6/bin/mvn /usr/local/bin/mvn
+
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy your project files into the container
+# Copy your pom.xml and project files
 COPY . .
 
 # Install dependencies and build the project
 RUN mvn clean install
 
 # Use a standard OpenJDK 21 base image for the final container
-FROM amazoncorretto:21
+FROM amazoncorretto:21-alpine
 
-# Set working directory
+# Set the working directory in the final image
 WORKDIR /app
 
-# Copy the build artifacts from the previous stage
-COPY --from=build /app/target/whatsappclone-1.0-SNAPSHOT.jar /app/whatsappclone.jar
+# Copy the jar from the build stage
+COPY --from=0 /app/target/whatsappclone-0.0.1-SNAPSHOT.jar /app/whatsappclone.jar
 
-# Expose the port your application will run on
+# Expose the port your app will run on
 EXPOSE 8080
 
-# Run the application
-ENTRYPOINT ["java", "-jar", "whatsappclone.jar"]
+# Run the jar file
+ENTRYPOINT ["java", "-jar", "/app/whatsappclone.jar"]
