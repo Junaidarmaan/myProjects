@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Chat</title>
+    <style>
+        #messageBox,
+        #recipientId {
+            width: 300px;
+            height: 20px;
+            margin: 5px 0;
+        }
+
+        #sendBtn {
+            padding: 5px 10px;
+            margin-left: 5px;
+        }
+
+        #chat {
+            margin-top: 20px;
+            width: 300px;
+            height: 300px;
+            border: 1px solid #ccc;
+            overflow-y: scroll;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>WebSocket Chat</h2>
+
+    <div id="chatSection">
+        <div id="chat"></div>
+        <input type="text" id="messageBox" placeholder="Type your message..." />
+        <button id="sendBtn" onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        var socket;
+        var id;
+        var target;
+
+        window.onload = function () {
+            getuserInfo();
+        };
+
+        async function getuserInfo() {
+            id = prompt("Please select a unique id for yourself");
+
+            const isUnique = await checkIfUnique(id);
+
+            if (!isUnique) {
+                target = prompt("Please enter the destination ID");
+                window.localStorage.setItem("Destination", target);
+                socket = new WebSocket("ws://localhost:8080/ws?id=" + id);
+                setupWebSocket();
+            } else {
+                alert("ID is not unique. Please try again.");
+                getuserInfo();
+            }
+        }
+
+        function setupWebSocket() {
+            socket.onopen = function () {
+                console.log("Connected to WebSocket server");
+            };
+
+            socket.onmessage = function (event) {
+                console.log("Received message: " + event.data);
+                var chatBox = document.getElementById("chat");
+                chatBox.innerHTML += "<p>" + event.data + "</p>";
+                chatBox.scrollTop = chatBox.scrollHeight;
+            };
+
+            socket.onclose = function () {
+                console.log("WebSocket connection closed");
+            };
+
+            socket.onerror = function (error) {
+                console.error("WebSocket error:", error);
+            };
+        }
+
+        async function checkIfUnique(el) {
+            const url = `http://localhost:8080/isUnique/${el}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('eroor in check unique :', error);
+                return false;
+            }
+        }
+
+        function sendMessage() {
+            var messageBox = document.getElementById("messageBox");
+            var message = messageBox.value.trim();
+
+            if (message !== "") {
+                let finalMessage = {
+                    message: message,
+                    target: localStorage.getItem("Destination")
+                };
+
+                socket.send(JSON.stringify(finalMessage));
+
+                var chatBox = document.getElementById("chat");
+                chatBox.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+
+                messageBox.value = "";
+            }
+        }
+    </script>
+
+</body>
+
+</html>
