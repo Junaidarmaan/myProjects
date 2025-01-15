@@ -55,7 +55,7 @@
             if (!isUnique) {
                 target = prompt("Please enter the destination ID");
                 window.localStorage.setItem("Destination", target);
-                socket = new WebSocket("wss://https://junnuwhatsapp.onrender.com/ws?id=" + id);
+                socket = new WebSocket("wss://junnuwhatsapp.onrender.com/ws?id=" + id);
                 setupWebSocket();
             } else {
                 alert("ID is not unique. Please try again.");
