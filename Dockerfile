@@ -1,5 +1,5 @@
-# Use Amazon Corretto JDK 21 as the base image
-FROM amazoncorretto:21-alpine as build
+# Use Amazon Corretto JDK 21 as the base image for the build stage
+FROM amazoncorretto:21 as build
 
 # Set working directory
 WORKDIR /app
@@ -10,8 +10,8 @@ COPY . .
 # Install dependencies and build the project
 RUN mvn clean install
 
-# Use a lightweight base image for the final container
-FROM openjdk:21-alpine
+# Use a standard OpenJDK 21 base image for the final container
+FROM amazoncorretto:21
 
 # Set working directory
 WORKDIR /app
