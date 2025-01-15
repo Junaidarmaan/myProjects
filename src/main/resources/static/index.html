@@ -55,7 +55,7 @@
             if (!isUnique) {
                 target = prompt("Please enter the destination ID");
                 window.localStorage.setItem("Destination", target);
-                socket = new WebSocket("ws://localhost:8080/ws?id=" + id);
+                socket = new WebSocket("ws://https://junnuwhatsapp.onrender.com/ws?id=" + id);
                 setupWebSocket();
             } else {
                 alert("ID is not unique. Please try again.");
@@ -85,7 +85,7 @@
         }
 
         async function checkIfUnique(el) {
-            const url = `http://localhost:8080/isUnique/${el}`;
+            const url = `https://junnuwhatsapp.onrender.com/isUnique/${el}`;
 
             try {
                 const response = await fetch(url);
